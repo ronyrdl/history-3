@@ -140,24 +140,63 @@ def calculate_statistics(inventory):
 
 
 # Save inventory data into a CSV file
-def save_csv(inventory, path):
+def save_csv(inventory, path="database.csv"):
     if len(inventory) == 0:
-        print("Inventory is empty, nothing to save")
+        print("El inventario está vacío, nada que guardar")
         return
 
     try:
-        # Open file in write mode
-        with open(path, "w", encoding="utf-8") as file:
-            file.write("name,price,amount\n")
-
-            # Write each product as a line
+        with open(path, "a", encoding="utf-8") as file:
             for product in inventory:
-                line = f"{product['name']},{product['price']},{product['amount']}\n"
-                file.write(line)
+                linea = f"{product['name']},{product['price']},{product['amount']}\n"
+                file.write(linea)
 
-        print(f"Inventory saved in: {path}")
+        print(f"Inventario actualizado en: {path}")
 
-    except PermissionError:
-        print("Error: No permission to write file")
     except Exception as e:
-        print(f"Error saving file: {e}")
+        print(f"Error al guardar el archivo: {e}")
+
+def load_csv(inventory, path="database.csv"):
+    """
+    Load products from a CSV file into the inventory.
+    Existing products in the file will be added if not already in inventory.
+    """
+    try:
+        with open(path, "r", encoding="utf-8") as file:
+            next(file)  # skip header line
+            for line in file:
+                line = line.strip() #here sikp empty lines
+                if not line:
+                    continue
+                name, price, amount = line.split(",")
+                price = float(price)
+                amount = int(amount)
+
+                # Check for duplicates
+                exists = False
+                for product in inventory:
+                    if (product["name"] == name and
+                        product["price"] == price and
+                        product["amount"] == amount):
+                        exists = True
+                        break
+
+                if not exists:
+                    inventory.append({
+                        "name": name,
+                        "price": price,
+                        "amount": amount
+                    })
+
+        print(f"Inventory loaded from: {path}")
+
+    except FileNotFoundError:
+        print(f"No file found at {path}, starting with empty inventory.")
+
+    except Exception as e:
+        # Catch any unexpected errors that occur during loading
+        # 'e' contains the error message or exception details
+        print(f"Error loading CSV: {e}")
+
+
+        
