@@ -10,7 +10,8 @@ def menu():
     print("5. Delete product")
     print("6. Show statistics")
     print("7. Save CSV")
-    print("8. Exit")
+    print("8. Load CSV")
+    print("9. Exit")
 
     try:
         # Convert user input to integer
@@ -48,11 +49,12 @@ while valid == 0:
         calculate_statistics(inventory)
 
     elif option == 7:
-        # Ask for file name and save data to CSV
-        path = input("Enter file name for example database.csv: ")
-        save_csv(inventory, path)
-
+        save_csv(inventory)
+    
     elif option == 8:
+        load_csv(inventory)
+
+    elif option == 9:
         # Exit program
         print("Goodbye")
         valid = 1
